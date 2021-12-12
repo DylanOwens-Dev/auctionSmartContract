@@ -1,0 +1,2 @@
+This smart contract is a project that allows users to bid on a chosen item using the ETH blockchain.
+You can set bid increment and starting bid minimum, the contract will also automatically set the bid the lowest accpetable price given increment and previous highest bid.
