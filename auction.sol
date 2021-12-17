@@ -27,17 +27,17 @@ contract Auction {
     }
 
     modifier notOwner() {
-        require(msg.sender != owner)
+        require(msg.sender != owner);
         _;
     }
 
     modifier afterStart() {
-        require(block.number >= startBlock)
+        require(block.number >= startBlock);
         _;
     }
 
     modifier beforeEnd() {
-        require(block.number <= endBlock)
+        require(block.number <= endBlock);
         _;
     }
     function min(uint a, uint b) pure internal returns(uint) {
@@ -58,7 +58,7 @@ contract Auction {
         bids[msg.sender] = currentBid;
 
         if(currentBid <= bids[highestBidder]){
-            highestBindingBid = min(currentBid + bidIncrement, bids[highestBindingBid])
+            highestBindingBid = min(currentBid + bidIncrement, bids[highestBidder]);
         } else {
             highestBindingBid = min(currentBid, bids[highestBidder] + bidIncrement);
             highestBidder = payable(msg.sender);
