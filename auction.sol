@@ -26,6 +26,11 @@ contract Auction {
         bidIncrement = 100;
     }
 
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        _;
+    }
+
     modifier notOwner() {
         require(msg.sender != owner);
         _;
@@ -48,6 +53,10 @@ contract Auction {
         }
     }
 
+    function cancelAuction() public onlyOwner {
+        auctionState = State.Canceled;
+    }
+
     function placeBid() public payable notOwner afterStart beforeEnd{
         require(auctionState == State.Running);
         require(msg.value >= 100);
@@ -63,6 +72,32 @@ contract Auction {
             highestBindingBid = min(currentBid, bids[highestBidder] + bidIncrement);
             highestBidder = payable(msg.sender);
         }
+    }
 
+    function finalizeAuction() public {
+        require(auctionState == State.Canceled || block.number > endBlock);
+        require(msg.sender == owner || bids[msg.sender] > 0);
+
+        address payable recipient;
+        uint value;
+
+        if(auctionState == State.Canceled) {
+            recipient = payable(msg.sender);
+            value = bids[msg.sender];
+        } else {
+            if(msg.sender == owner) {
+                recipient = owner;
+                value = highestBindingBid;
+            } else {
+                if(msg.sender == highestBidder) {
+                    recipient = highestBidder;
+                    value = bids[highestBidder];
+                } else {
+                    recipient = payable(msg.sender);
+                    value = bids[msg.sender];
+                }
+            }
+        }
+        recipient.transfer(value);
     }
 }
